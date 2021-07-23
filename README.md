@@ -1,4 +1,5 @@
-<img src="https://github.com/kubernetes/kubernetes/raw/master/logo/logo.png" width="100">
+![Node-Check Logo](https://github.com/kubernetes/kubernetes/raw/master/logo/logo.png)
+
 [![Build Status](https://drone.support.tools/api/badges/mattmattox/node-check/status.svg)](https://drone.support.tools/mattmattox/node-check)
 ![Docker Pulls](https://img.shields.io/docker/pulls/supporttools/node-check.svg)
 
@@ -10,7 +11,7 @@ Node Check is a GO webserver that connects to the Kubernetes API to capture the 
 
 NOTE: All access is Read-Only and is as minimum as possible.
 
-## Install
+## Installation steps
 
 ### kubectl apply
 ```
