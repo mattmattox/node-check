@@ -45,28 +45,28 @@ echo "Release: $RELEASE"
 echo "Build Number: $DRONE_BUILD_NUMBER"
 
 echo "Setting up SSH..."
-mkdir -p ~/.ssh
-echo "$SSH_KEY" > ~/.ssh/id_rsa
-chmod 0600 ~/.ssh/id_rsa
+mkdir -p /ssh
+echo "$SSH_KEY" | sed 's/\\n/\'$'\n''/g' > /ssh/id_rsa
+chmod 0600 /ssh/id_rsa
 eval "$(ssh-agent -s)"
-ssh-add ~/.ssh/id_rsa
-git config --global core.sshCommand "ssh -i ~/.ssh/id_rsa -F /dev/null -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+ssh-add /ssh/id_rsa
+git config --global core.sshCommand "ssh -i /ssh/id_rsa -F /dev/null -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 
-cd /drone/src/
+cd /drone/src/chart/
 
 echo "Find and replace values..."
-sed -i "s|RELEASE|${RELEASE}|g" ./chart/node-check/chart.yaml
-sed -i "s|RELEASE|${RELEASE}|g" ./chart/node-check/values.yaml
-sed -i "s|DRONE_BUILD_NUMBER|${DRONE_BUILD_NUMBER}|g" ./chart/node-check/chart.yaml
-sed -i "s|DRONE_BUILD_NUMBER|${DRONE_BUILD_NUMBER}|g" ./chart/node-check/values.yaml
+sed -i "s|RELEASE|${RELEASE}|g" ./node-check/Chart.yaml
+sed -i "s|RELEASE|${RELEASE}|g" ./node-check/values.yaml
+sed -i "s|DRONE_BUILD_NUMBER|${DRONE_BUILD_NUMBER}|g" ./node-check/Chart.yaml
+sed -i "s|DRONE_BUILD_NUMBER|${DRONE_BUILD_NUMBER}|g" ./node-check/values.yaml
 
 echo "::Chart::"
-cat ./chart/node-check/chart.yaml
+cat ./node-check/Chart.yaml
 echo "::Values::"
-cat ./chart/node-check/values.yaml
+cat ./node-check/values.yaml
 
 echo "Packaging helm chart..."
-helm package ./chart/node-check/ --version $RELEASE --app-version $DRONE_BUILD_NUMBER
+helm package ./node-check/ --version $RELEASE --app-version $DRONE_BUILD_NUMBER
 
 echo "Pulling down chart repo..."
 mkdir -p /drone/helm-repo
@@ -82,7 +82,7 @@ else
 fi
 
 echo "Copying package into repo..."
-cp /drone/src/-*.tgz .
+cp /drone/src/chart/*.tgz .
 
 echo "Reindexing repo..."
 if [[ ${Environment} == "production" ]]
