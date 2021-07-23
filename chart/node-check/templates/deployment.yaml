@@ -28,8 +28,8 @@ spec:
         effect: NoSchedule
       containers:
       - name: health-check
-        image: "{{- with .Values.image.repository }}:{{ .Values.imagetag }}"
-        imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
           - name: NODE_NAME
             valueFrom:

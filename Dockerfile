@@ -1,4 +1,3 @@
-FROM golang:latest
-
+FROM scratch
 COPY main /
 CMD ["/main"]
