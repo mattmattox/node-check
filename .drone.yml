@@ -7,12 +7,6 @@ platform:
   os: linux
   arch: amd64
 
-trigger:
-  branches:
-    - master
-  event:
-    - push
-
 steps:
   - name: Go-Build
     image: golang
@@ -53,6 +47,41 @@ steps:
         from_secret: docker-username
       password:
         from_secret: docker-password
+    when:
+     event:
+     - deployment
+     - promote
+     target:
+     - dev
+     - production
+
+  - name: Helm-Chart-Dev
+    image: supporttools/kube-builder:50
+    environment:
+      SSH_KEY:
+        from_secret: ssh_key    
+    commands:
+      - bash ./chart/build.sh -b ${DRONE_BUILD_NUMBER} -r ${Release} -e dev
+    when:
+     event:
+     - deployment
+     - promote
+     target:
+     - dev
+
+  - name: Helm-Chart-Prod
+    image: supporttools/kube-builder:50
+    environment:
+      SSH_KEY:
+        from_secret: ssh_key    
+    commands:
+      - bash ./chart/build.sh -b ${DRONE_BUILD_NUMBER} -r ${Release} -e production
+    when:
+     event:
+     - deployment
+     - promote
+     target:
+     - production
 
 node_selector:
   beta.kubernetes.io/arch: amd64
