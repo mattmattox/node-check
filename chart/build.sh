@@ -55,18 +55,18 @@ git config --global core.sshCommand "ssh -i ~/.ssh/id_rsa -F /dev/null -o Strict
 cd /drone/src/
 
 echo "Find and replace values..."
-sed -i "s|RELEASE|${RELEASE}|g" ./chart/chart.yaml
-sed -i "s|RELEASE|${RELEASE}|g" ./chart/values.yaml
-sed -i "s|DRONE_BUILD_NUMBER|${DRONE_BUILD_NUMBER}|g" ./chart/chart.yaml
-sed -i "s|DRONE_BUILD_NUMBER|${DRONE_BUILD_NUMBER}|g" ./chart/values.yaml
+sed -i "s|RELEASE|${RELEASE}|g" ./chart/node-check/chart.yaml
+sed -i "s|RELEASE|${RELEASE}|g" ./chart/node-check/values.yaml
+sed -i "s|DRONE_BUILD_NUMBER|${DRONE_BUILD_NUMBER}|g" ./chart/node-check/chart.yaml
+sed -i "s|DRONE_BUILD_NUMBER|${DRONE_BUILD_NUMBER}|g" ./chart/node-check/values.yaml
 
 echo "::Chart::"
-cat ./chart/chart.yaml
+cat ./chart/node-check/chart.yaml
 echo "::Values::"
-cat ./chart/values.yaml
+cat ./chart/node-check/values.yaml
 
 echo "Packaging helm chart..."
-helm package ./chart/ --version $RELEASE --app-version $DRONE_BUILD_NUMBER
+helm package ./chart/node-check/ --version $RELEASE --app-version $DRONE_BUILD_NUMBER
 
 echo "Pulling down chart repo..."
 mkdir -p /drone/helm-repo
@@ -97,5 +97,5 @@ fi
 
 echo "Publishing to Chart repo..."
 git add .
-git commit -m "Publishing KubeBackup ${RELEASE}"
+git commit -m "Publishing chart ${RELEASE}"
 git push
