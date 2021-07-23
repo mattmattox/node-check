@@ -1,0 +1,59 @@
+---
+kind: pipeline
+type: kubernetes
+name: Build-amd64
+
+platform:
+  os: linux
+  arch: amd64
+
+trigger:
+  branches:
+    - master
+  event:
+    - push
+
+steps:
+  - name: Go-Build
+    image: golang
+    environment:
+      CGO_ENABLED: 0
+    commands:
+      - go get
+      - go build -o main
+    resources:
+      limits:
+        cpu: 2000
+        memory: 4000MiB
+      requests:
+        cpu: 1000
+        memory: 2000MiB
+
+  - name: Docker-Build
+    image: plugins/docker
+    settings:
+      purge: false
+      repo: supporttools/node-check
+      dry_run: true
+      dockerfile: ./Dockerfile
+      context: ./
+
+  - name: Docker-Publish
+    image: plugins/docker
+    settings:
+      purge: false
+      repo: supporttools/node-check
+      dockerfile: ./Dockerfile
+      context: ./
+      tags:
+        - ${DRONE_BUILD_NUMBER}
+        - ${DRONE_COMMIT_BRANCH}
+        - latest
+      username:
+        from_secret: docker-username
+      password:
+        from_secret: docker-password
+
+node_selector:
+  beta.kubernetes.io/arch: amd64
+  drone-runner: true
